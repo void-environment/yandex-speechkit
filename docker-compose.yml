@@ -1,0 +1,47 @@
+version: '3.8'
+
+services:
+  speech-service:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      - YANDEX_CLOUD_IAM_TOKEN=${YANDEX_CLOUD_IAM_TOKEN}
+      - YANDEX_FOLDER_ID=${YANDEX_FOLDER_ID}
+      - DEBUG=false
+    volumes:
+      - ./temp:/app/temp
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # Опционально: Redis для очередей (для будущего развития)
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    restart: unless-stopped
+    profiles:
+      - with-redis
+
+  # Опционально: PostgreSQL для метаданных (для будущего развития)
+  postgres:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_DB: speech_service
+      POSTGRES_USER: speech_user
+      POSTGRES_PASSWORD: speech_password
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: unless-stopped
+    profiles:
+      - with-db
+
+volumes:
+  postgres_data:
