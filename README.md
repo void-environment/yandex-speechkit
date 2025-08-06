@@ -112,8 +112,8 @@ YANDEX_PRIVATE_KEY=
 
 ```bash
 # Базовое использование
-python speech_to_text.py audio.ogg
+python speech_to_text.py input/audio.ogg
 
 # С указанием языка
-python speech_to_text.py audio.mp3 en-US
+python speech_to_text.py input/audio.mp3 en-US
 ```
